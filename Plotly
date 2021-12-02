@@ -21,6 +21,27 @@ trace3= go.Bar(x=dfpivot.index,y=dfpivot.Diagnostic_Centre, name ='Diagnostic Ce
 trace4= go.Bar(x=dfpivot.index,y=dfpivot.Single_Speciality, name ='Single Speciality')
 
 data = [trace1,trace2,trace3,trace4]
-layout = go.Layout(title = 'Trial 4', barmode = 'stack')
+layout = go.Layout(title = 'Trial_Stacked_Bar', barmode = 'stack')
 figure = go.Figure(data = data, layout = layout)
 pyo.plot(figure)
+
+#To create 100% Stack Bar
+dfpivotlist =['Clinic','Multispeciality','Diagnostic_Centre','Single_Speciality']
+dfpivot['Total'] = dfpivot[dfpivotlist].sum(axis=1)
+dfpivotper = dfpivot
+dfpivotper.Clinic = dfpivot.Clinic/dfpivot.Total*100
+dfpivotper.Multispeciality = dfpivot.Multispeciality/dfpivot.Total*100
+dfpivotper.Diagnostic_Centre = dfpivot.Diagnostic_Centre/dfpivot.Total*100
+dfpivotper.Single_Speciality = dfpivot.Single_Speciality/dfpivot.Total*100
+
+dfpivotper.head()
+
+trace5= go.Bar(x=dfpivot.index,y=dfpivot.Clinic, name ='Clinic')
+trace6= go.Bar(x=dfpivot.index,y=dfpivot.Multispeciality, name ='Multispeciality')
+trace7= go.Bar(x=dfpivot.index,y=dfpivot.Diagnostic_Centre, name ='Diagnostic Centre')
+trace8= go.Bar(x=dfpivot.index,y=dfpivot.Single_Speciality, name ='Single Speciality')
+
+data = [trace5,trace6,trace7,trace8]
+layout = go.Layout(title = 'Trial_100%StackedBar', barmode = 'stack')
+figure2 = go.Figure(data = data, layout = layout)
+pyo.plot(figure2)
