@@ -1,0 +1,26 @@
+import pandas as pd
+
+import plotly.graph_objs as go
+import plotly.offline as pyo
+df = pd.read_excel(r'C:\Users\shrey\Demo_Excel.xlsx')
+
+
+#Changing the date format to Month, Year
+df['Contract_Start_Date']= df['Contract_Start_Date'].dt.strftime('%m/%Y')
+
+#For Stacked Bar Graph
+dfpivot = df.pivot_table(index='Contract_Start_Date',columns = 'Provider_Category',values = 'Provider_Name', aggfunc= 'count')
+df.pivot_table(index='Contract_Start_Date',columns = 'Provider_Category',values = 'Provider_Name', aggfunc= 'count').plot.bar(stacked=True)
+
+
+dfpivot.head()
+
+trace1= go.Bar(x=dfpivot.index,y=dfpivot.Clinic, name ='Clinic')
+trace2= go.Bar(x=dfpivot.index,y=dfpivot.Multispeciality, name ='Multispeciality')
+trace3= go.Bar(x=dfpivot.index,y=dfpivot.Diagnostic_Centre, name ='Diagnostic Centre')
+trace4= go.Bar(x=dfpivot.index,y=dfpivot.Single_Speciality, name ='Single Speciality')
+
+data = [trace1,trace2,trace3,trace4]
+layout = go.Layout(title = 'Trial 4', barmode = 'stack')
+figure = go.Figure(data = data, layout = layout)
+pyo.plot(figure)
