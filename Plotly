@@ -2,16 +2,16 @@ import pandas as pd
 
 import plotly.graph_objs as go
 import plotly.offline as pyo
+
 df = pd.read_excel(r'C:\Users\shrey\Demo_Excel.xlsx')
 
 
 #Changing the date format to Month, Year
 df['Contract_Start_Date']= df['Contract_Start_Date'].dt.strftime('%m/%Y')
 
-#For Stacked Bar Graph
+#1 For Stacked Bar Graph
 dfpivot = df.pivot_table(index='Contract_Start_Date',columns = 'Provider_Category',values = 'Provider_Name', aggfunc= 'count')
 df.pivot_table(index='Contract_Start_Date',columns = 'Provider_Category',values = 'Provider_Name', aggfunc= 'count').plot.bar(stacked=True)
-
 
 dfpivot.head()
 
@@ -24,12 +24,13 @@ data = [trace1,trace2,trace3,trace4]
 layout = go.Layout(title = 'Trial_Stacked_Bar2', barmode = 'stack')
 figure = go.Figure(data = data, layout = layout)
 pyo.plot(figure)
+#-----------------------------
 
-
-#To create 100% Stack Bar
-dfpivotlist =['Clinic','Multispeciality','Diagnostic_Centre','Single_Speciality']
-dfpivot['Total'] = dfpivot[dfpivotlist].sum(axis=1)
+#2 For 100% Stacked Bar
 dfpivotper = dfpivot
+dfpivotlist =['Clinic','Multispeciality','Diagnostic_Centre','Single_Speciality']
+dfpivotper['Total'] = dfpivotper[dfpivotlist].sum(axis=1)
+
 dfpivotper.Clinic = dfpivot.Clinic/dfpivot.Total*100
 dfpivotper.Multispeciality = dfpivot.Multispeciality/dfpivot.Total*100
 dfpivotper.Diagnostic_Centre = dfpivot.Diagnostic_Centre/dfpivot.Total*100
@@ -46,3 +47,14 @@ data = [trace5,trace6,trace7,trace8]
 layout = go.Layout(title = 'Trial_100%StackedBar2', barmode = 'stack')
 figure2 = go.Figure(data = data, layout = layout)
 pyo.plot(figure2)
+#-----------------------------
+
+#3 For Bar and Line
+dfpivot = df.pivot_table(index='Contract_Start_Date',columns = 'Provider_Category',values = 'Provider_Name', aggfunc= 'count')
+df_t=dfpivot.T
+df_t['Total'] = df_t.sum(axis=1)
+
+import plotly.express as px
+FigBar = px.bar(df_t,x=df_t.index,y='Total')
+pyo.plot(FigBar)
+FigBar.show()
