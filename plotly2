@@ -1,0 +1,63 @@
+import pandas as pd
+
+import plotly.graph_objs as go
+import plotly.offline as pyo
+
+df = pd.read_excel(r'C:\Users\shrey\Demo_Excel.xlsx')
+
+
+#Changing the date format to Month, Year
+df['Contract_Start_Date']= df['Contract_Start_Date'].dt.strftime('%m/%Y')
+
+#1 For Stacked Bar Graph
+dfpivot = df.copy()
+dfpivot = dfpivot.pivot_table(index='Contract_Start_Date',columns = 'Provider_Category',values = 'Provider_Name', aggfunc= 'count')
+df.pivot_table(index='Contract_Start_Date',columns = 'Provider_Category',values = 'Provider_Name', aggfunc= 'count').plot.bar(stacked=True)
+dfpivotlist =['Clinic','Multispeciality','Diagnostic_Centre','Single_Speciality']
+dfpivot['Total'] = dfpivot[dfpivotlist].sum(axis=1)
+dfpivot.head()
+
+trace1= go.Bar(x=dfpivot.index,y=dfpivot.Clinic, name ='Clinic')
+trace2= go.Bar(x=dfpivot.index,y=dfpivot.Multispeciality, name ='Multispeciality')
+trace3= go.Bar(x=dfpivot.index,y=dfpivot.Diagnostic_Centre, name ='Diagnostic Centre')
+trace4= go.Bar(x=dfpivot.index,y=dfpivot.Single_Speciality, name ='Single Speciality')
+
+data = [trace1,trace2,trace3,trace4]
+layout = go.Layout(title = 'Trial_Stacked_Bar2', barmode = 'stack')
+figure = go.Figure(data = data, layout = layout)
+pyo.plot(figure)
+#-----------------------------
+
+#2 For 100% Stacked Bar
+dfpivotper = dfpivot.copy()
+dfpivotlist =['Clinic','Multispeciality','Diagnostic_Centre','Single_Speciality']
+dfpivotper['Total'] = dfpivotper[dfpivotlist].sum(axis=1)
+
+dfpivotper.Clinic = dfpivot.Clinic/dfpivot.Total*100
+dfpivotper.Multispeciality = dfpivot.Multispeciality/dfpivot.Total*100
+dfpivotper.Diagnostic_Centre = dfpivot.Diagnostic_Centre/dfpivot.Total*100
+dfpivotper.Single_Speciality = dfpivot.Single_Speciality/dfpivot.Total*100
+
+dfpivotper.head()
+
+trace5= go.Bar(x=dfpivot.index,y=dfpivotper.Clinic, name ='Clinic')
+trace6= go.Bar(x=dfpivot.index,y=dfpivotper.Multispeciality, name ='Multispeciality')
+trace7= go.Bar(x=dfpivot.index,y=dfpivotper.Diagnostic_Centre, name ='Diagnostic Centre')
+trace8= go.Bar(x=dfpivot.index,y=dfpivotper.Single_Speciality, name ='Single Speciality')
+
+data = [trace5,trace6,trace7,trace8]
+layout = go.Layout(title = 'Trial_100%StackedBar2', barmode = 'stack')
+figure2 = go.Figure(data = data, layout = layout)
+pyo.plot(figure2)
+#-----------------------------
+
+#3 For Bar and Line
+#dfpivot = df.pivot_table(index='Contract_Start_Date',columns = 'Provider_Category',values = 'Provider_Name', aggfunc= 'count')
+df_t=dfpivot.copy()
+df_t=df_t.T
+df_t['Total'] = df_t.sum(axis=1)
+
+import plotly.express as px
+FigBar = px.bar(df_t,x=df_t.index,y='Total')
+pyo.plot(FigBar)
+FigBar.show()
