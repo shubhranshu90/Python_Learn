@@ -1,6 +1,4 @@
-#add codes to exisitng code to ue existing dataframes and imported modules
-
-# Attempt Dual Axis Bar and Dist
+# Chart 3 Dual Axis Bar and Dist
 df_dual = df_pivot.copy()
 #Transpose th pivot to get Provider category as te index (for X axis)
 df_dual= df_dual.T
@@ -11,16 +9,45 @@ df_dual_per = df_dual.copy()
 from plotly.subplots import make_subplots
 fig_dual = make_subplots(specs=[[{"secondary_y" : True}]])
 Count_Providers = len(df.index)
-#Count_Providers
+
 # Creating the Y axis columns in df_dual and df_dal_per
 
 df_dual['Total'] = df_dual.sum(axis=1)
 df_dual_per['Dist'] = df_dual_per.sum(axis=1)/Count_Providers
 
-#trying to add % to Dist
-#df_dual_per['Dist']=pd.Series([round(val,2) for val in df_dual_per['Dist']]) # it did not work
 
 fig_dual.add_trace(go.Bar(x=df_dual.index, y=df_dual.Total, name = "Number of providers"), secondary_y = False)
 fig_dual.add_trace(go.Scatter(x=df_dual_per.index, y=df_dual_per.Dist, name = "Provider Distribution"), secondary_y = True)
 
 pyo.plot(fig_dual)
+
+#Chart 4 for Newly onboarded providers- Dual Axis Bar and Dist
+
+#Let us filtr on df to keep only new ones
+df2 = df.copy()
+df2 = df2[df2['Newly_Added_Provider']==1]
+Count_New_Providers = len(df2.index)
+
+
+df2_pivot = df2.copy()
+
+df2_pivot = df2_pivot.pivot_table(
+                                index = 'Contract_Start_Date', 
+                                columns = 'Provider_Category',
+                                values = 'Provider_Name',
+                                aggfunc = 'count'
+                                )
+
+df2_dual = df2_pivot.copy()
+df2_dual = df2_dual.T
+df2_dual_per = df2_dual.copy()
+
+df2_dual['Total'] = df2_dual.sum(axis=1)
+df2_dual_per['Dist'] = df2_dual_per.sum(axis=1)/Count_New_Providers
+
+fig_dual2 = make_subplots(specs=[[{"secondary_y" : True}]])
+
+fig_dual2.add_trace(go.Bar(x=df2_dual.index, y=df2_dual.Total, name = "Number of New Providers"), secondary_y = False)
+fig_dual2.add_trace(go.Scatter(x=df2_dual_per.index, y=df2_dual_per.Dist, name = "Provider Distribution"), secondary_y = True)
+
+pyo.plot(fig_dual2)
