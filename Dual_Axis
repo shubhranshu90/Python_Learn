@@ -1,0 +1,26 @@
+#add codes to exisitng code to ue existing dataframes and imported modules
+
+# Attempt Dual Axis Bar and Dist
+df_dual = df_pivot.copy()
+#Transpose th pivot to get Provider category as te index (for X axis)
+df_dual= df_dual.T
+#Also create a similar one for distn
+df_dual_per = df_dual.copy()
+
+#import subplots module
+from plotly.subplots import make_subplots
+fig_dual = make_subplots(specs=[[{"secondary_y" : True}]])
+Count_Providers = len(df.index)
+#Count_Providers
+# Creating the Y axis columns in df_dual and df_dal_per
+
+df_dual['Total'] = df_dual.sum(axis=1)
+df_dual_per['Dist'] = df_dual_per.sum(axis=1)/Count_Providers
+
+#trying to add % to Dist
+#df_dual_per['Dist']=pd.Series([round(val,2) for val in df_dual_per['Dist']]) # it did not work
+
+fig_dual.add_trace(go.Bar(x=df_dual.index, y=df_dual.Total, name = "Number of providers"), secondary_y = False)
+fig_dual.add_trace(go.Scatter(x=df_dual_per.index, y=df_dual_per.Dist, name = "Provider Distribution"), secondary_y = True)
+
+pyo.plot(fig_dual)
